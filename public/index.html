@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agroinform Kulcsszavak</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    h1 { font-size: 1.5rem; }
+    table { border-collapse: collapse; margin-top: 1rem; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background-color: #eee; }
+    #auth-section, #data-section { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <h1>Agroinform.hu kulcsszavak – Search Console</h1>
+  <div id="auth-section">
+    <a href="/auth"><button>Bejelentkezés Google-lel</button></a>
+  </div>
+  <div id="data-section" style="display:none;">
+    <h2>Kulcsszavak</h2>
+    <table id="keywords-table">
+      <thead>
+        <tr><th>Kulcsszó</th><th>Megjelenések</th><th>Kattintások</th><th>Pozíció</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function fetchKeywords() {
+      const res = await fetch("/keywords");
+      if (!res.ok) return;
+      const data = await res.json();
+      const tableBody = document.querySelector("#keywords-table tbody");
+      tableBody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.keys[0]}</td>
+                        <td>${row.impressions}</td>
+                        <td>${row.clicks}</td>
+                        <td>${row.position.toFixed(1)}</td>`;
+        tableBody.appendChild(tr);
+      });
+      document.getElementById("data-section").style.display = "block";
+      document.getElementById("auth-section").style.display = "none";
+    }
+
+    window.onload = () => {
+      fetchKeywords(); // Ha már hitelesítve vagyunk, betölti az adatokat
+    };
+  </script>
+</body>
+</html>
